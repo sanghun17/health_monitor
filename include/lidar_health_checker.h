@@ -1,21 +1,21 @@
-#ifndef IMU_HEALTH_CHECKER_H_
-#define IMU_HEALTH_CHECKER_H_
+#ifndef LIDAR_HEALTH_CHECKER_H_
+#define LIDAR_HEALTH_CHECKER_H_
 
 #include <sensor_health_checker.h>
-#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/LaserScan.h>
 
-class ImuHealthChecker : public SensorHealthChecker<sensor_msgs::Imu> {
+class LidarHealthChecker : public SensorHealthChecker<sensor_msgs::LaserScan> {
 
 public:
-    ImuHealthChecker(ros::NodeHandle& nh) : SensorHealthChecker<sensor_msgs::Imu>(nh, "/imu/data")
+    LidarHealthChecker(ros::NodeHandle& nh) : SensorHealthChecker<sensor_msgs::LaserScan>(nh, "/Scan")
     {
        }
-    void callback(const sensor_msgs::Imu::ConstPtr& msg) override {
+    void callback(const sensor_msgs::LaserScan::ConstPtr& msg) override {   
         sensor_data_received_ = true;
         last_sensor_msg_ = msg;
     }
 
-  void checkSensorHealth() override {
+    void checkSensorHealth() override {
         double seq = last_sensor_msg_->header.seq;
         bool health_status;
         if (last_value_ != 0.0) {
@@ -28,12 +28,12 @@ public:
             health_status = false;
         }
         last_value_ = seq;
-        SensorHealthChecker<sensor_msgs::Imu>::publishHealth(health_status);
+        SensorHealthChecker<sensor_msgs::LaserScan>::publishHealth(health_status);
     }
 
     void timerCallback(const ros::TimerEvent& event) override {
         if (!sensor_data_received_) {
-            SensorHealthChecker<sensor_msgs::Imu>::publishHealth(false);
+            SensorHealthChecker<sensor_msgs::LaserScan>::publishHealth(false);
         }
         else{
             this->checkSensorHealth();        }
@@ -43,4 +43,4 @@ public:
 
 };
 
-#endif  // IMU_HEALTH_CHECKER_H_
+#endif  // LIDAR_HEALTH_CHECKER_H_

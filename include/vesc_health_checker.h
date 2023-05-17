@@ -1,20 +1,19 @@
-#ifndef IMU_HEALTH_CHECKER_H_
-#define IMU_HEALTH_CHECKER_H_
+#ifndef VESC_HEALTH_CHECKER_H_
+#define VESC_HEALTH_CHECKER_H_
 
 #include <sensor_health_checker.h>
-#include <sensor_msgs/Imu.h>
+#include <nav_msgs/Odometry.h>
 
-class ImuHealthChecker : public SensorHealthChecker<sensor_msgs::Imu> {
+class VescHealthChecker : public SensorHealthChecker<nav_msgs::Odometry> {
 
 public:
-    ImuHealthChecker(ros::NodeHandle& nh) : SensorHealthChecker<sensor_msgs::Imu>(nh, "/imu/data")
+    VescHealthChecker(ros::NodeHandle& nh) : SensorHealthChecker<nav_msgs::Odometry>(nh, "/vesc/odom")
     {
        }
-    void callback(const sensor_msgs::Imu::ConstPtr& msg) override {
+    void callback(const nav_msgs::Odometry::ConstPtr& msg) override {
         sensor_data_received_ = true;
         last_sensor_msg_ = msg;
     }
-
   void checkSensorHealth() override {
         double seq = last_sensor_msg_->header.seq;
         bool health_status;
@@ -28,12 +27,11 @@ public:
             health_status = false;
         }
         last_value_ = seq;
-        SensorHealthChecker<sensor_msgs::Imu>::publishHealth(health_status);
+        SensorHealthChecker<nav_msgs::Odometry>::publishHealth(health_status);
     }
-
     void timerCallback(const ros::TimerEvent& event) override {
         if (!sensor_data_received_) {
-            SensorHealthChecker<sensor_msgs::Imu>::publishHealth(false);
+            SensorHealthChecker<nav_msgs::Odometry>::publishHealth(false);
         }
         else{
             this->checkSensorHealth();        }
@@ -43,4 +41,4 @@ public:
 
 };
 
-#endif  // IMU_HEALTH_CHECKER_H_
+#endif  // VESC_HEALTH_CHECKER_H_
