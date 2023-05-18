@@ -7,7 +7,7 @@
 class LidarHealthChecker : public SensorHealthChecker<sensor_msgs::LaserScan> {
 
 public:
-    LidarHealthChecker(ros::NodeHandle& nh) : SensorHealthChecker<sensor_msgs::LaserScan>(nh, "/Scan")
+    LidarHealthChecker(ros::NodeHandle& nh) : SensorHealthChecker<sensor_msgs::LaserScan>(nh, "/scan")
     {
        }
     void callback(const sensor_msgs::LaserScan::ConstPtr& msg) override {   
